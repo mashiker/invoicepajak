@@ -116,11 +116,24 @@ describe('calcPph', () => {
     expect(r.total).toBe(20_000)
   })
 
-  it('custom PPh: tarif bisa diisi sbg desimal (0.02) atau persen (2) — auto-detect', () => {
+  it('custom PPh: tarif selalu dibaca sbg persen (0.02 = 0,02%)', () => {
     const r = calcPph(dpp, {
       customPph: [{ id: '1', label: 'Custom', rate: 0.02, enabled: true }]
     })
-    expect(r.custom[0].amount).toBe(20_000) // 0.02 × 1jt = 20k (sama kayak 2%)
+    expect(r.custom[0].amount).toBe(200) // 0,02% × 1jt = 200
+  })
+
+  it('custom PPh: tarif 1% dan 0,5% tidak dianggap pecahan', () => {
+    const r = calcPph(dpp, {
+      customPph: [
+        { id: '1', label: 'PPh 1%', rate: 1, enabled: true },       // 1% → 10.000
+        { id: '2', label: 'PPh Final UMKM', rate: 0.5, enabled: true }, // 0,5% → 5.000
+      ]
+    })
+    expect(r.custom[0].amount).toBe(10_000)
+    expect(r.custom[1].amount).toBe(5_000)
+    expect(r.breakdown[0].label).toBe('PPh 1% (1%)')
+    expect(r.breakdown[1].label).toBe('PPh Final UMKM (0.5%)')
   })
 })
 
