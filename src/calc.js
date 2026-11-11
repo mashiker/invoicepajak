@@ -80,13 +80,11 @@ export function calcPph(dpp, cfg = {}) {
       if (!cp.enabled) continue
       const ratePct = Number(cp.rate) || 0
       if (ratePct === 0) continue
-      // rate bisa diisi sebagai persen (2 = 2%) atau desimal (0.02). Auto-detect: kalau <= 1, treat as fraction.
-      const fraction = ratePct <= 1 ? ratePct : ratePct / 100
-      const amount = round2(dpp * fraction)
+      // rate selalu persen (2 = 2%, 0.5 = 0,5%), sesuai field "%" di form
+      const amount = round2(dpp * ratePct / 100)
       if (amount <= 0) continue
       out.custom.push({ id: cp.id, label: cp.label, rate: ratePct, amount })
-      const rateLabel = ratePct <= 1 ? `${(ratePct * 100).toFixed(ratePct * 100 % 1 === 0 ? 0 : 2)}%` : `${ratePct}%`
-      out.breakdown.push({ label: `${cp.label} (${rateLabel})`, amount, isCustom: true })
+      out.breakdown.push({ label: `${cp.label} (${ratePct}%)`, amount, isCustom: true })
     }
   }
 
