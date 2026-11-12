@@ -116,11 +116,16 @@ describe('calcPph', () => {
     expect(r.total).toBe(20_000)
   })
 
-  it('custom PPh: tarif bisa diisi sbg desimal (0.02) atau persen (2) — auto-detect', () => {
-    const r = calcPph(dpp, {
-      customPph: [{ id: '1', label: 'Custom', rate: 0.02, enabled: true }]
+  it('custom PPh: tarif <= 1 tetap persen (1 = 1%, 0.5 = 0,5%) — regresi issue #1', () => {
+    const r1 = calcPph(dpp, {
+      customPph: [{ id: '1', label: 'PPh', rate: 1, enabled: true }]
     })
-    expect(r.custom[0].amount).toBe(20_000) // 0.02 × 1jt = 20k (sama kayak 2%)
+    expect(r1.custom[0].amount).toBe(10_000) // 1% × 1jt = 10k (bukan 100%)
+
+    const r2 = calcPph(dpp, {
+      customPph: [{ id: '1', label: 'PPh Final UMKM', rate: 0.5, enabled: true }]
+    })
+    expect(r2.custom[0].amount).toBe(5_000) // 0,5% × 1jt = 5k (bukan 50%)
   })
 })
 
