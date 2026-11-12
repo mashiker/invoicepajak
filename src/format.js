@@ -28,13 +28,13 @@ const monthID = [
 export function formatDateID(iso) {
   if (!iso) return ''
   const [y, m, d] = iso.split('-').map(Number)
-  if (!y || !m || !d) return iso
+  if (!y || !m || !d || m < 1 || m > 12 || d < 1 || d > 31) return iso
   return `${d} ${monthID[m - 1]} ${y}`
 }
 
-/** Terbilang angka → huruf Indonesia (0 - 999.999.999.999). */
+/** Terbilang angka → huruf Indonesia (0 - 999.999.999.999.999). */
 export function terbilang(num) {
-  num = Math.floor(Math.abs(Number(num) || 0))
+  num = Math.round(Math.abs(Number(num) || 0))
   if (num === 0) return 'nol'
   const satuan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan']
 
@@ -57,12 +57,14 @@ export function terbilang(num) {
   }
 
   const parts = []
-  const milyar = Math.floor(num / 1_000_000_000)
+  const triliun = Math.floor(num / 1_000_000_000_000)
+  const milyar = Math.floor((num % 1_000_000_000_000) / 1_000_000_000)
   const juta = Math.floor((num % 1_000_000_000) / 1_000_000)
   const ribu = Math.floor((num % 1_000_000) / 1000)
   const sisa = num % 1000
 
-  if (milyar) parts.push(below1000(milyar) + ' milyar')
+  if (triliun) parts.push(below1000(triliun) + ' triliun')
+      if (milyar) parts.push(below1000(milyar) + ' milyar')
   if (juta) parts.push(below1000(juta) + ' juta')
   if (ribu) {
     if (ribu === 1) parts.push('seribu')

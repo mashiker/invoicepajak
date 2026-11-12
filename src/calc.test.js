@@ -125,7 +125,14 @@ describe('calcPph', () => {
 })
 
 describe('computeTotals — integration', () => {
-  it('scenario: jasa konsultan 10jt, PKP, PPh 23 dipotong', () => {
+  it('computeTotals(null) tidak crash — regresi issue #3', () => {
+      const r = computeTotals(null, {})
+        expect(r.subtotal).toBe(0)
+          expect(r.netPayable).toBe(0)
+            expect(r.totalPph).toBe(0)
+  })      
+  
+    it('scenario: jasa konsultan 10jt, PKP, PPh 23 dipotong', () => {
     const items = [{ qty: 1, price: 11_200_000, type: 'jasa' }] // gross inclusive
     const totals = computeTotals(items, { isPkp: true, pph23: true })
 

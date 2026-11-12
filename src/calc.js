@@ -101,7 +101,8 @@ export function calcPph(dpp, cfg = {}) {
  * @returns {object} { subtotal, dpp, ppn, pph:{...}, grossTotal, totalPph, netPayable }
  */
 export function computeTotals(items, taxCfg = {}) {
-  const subtotal = calcSubtotal(items)
+  if (!Array.isArray(items)) items = []
+    const subtotal = calcSubtotal(items)
   const isPkp = taxCfg.isPkp !== false
   const { dpp, ppn } = calcPpn(subtotal, isPkp)
 
